@@ -1,9 +1,9 @@
-const EventPage = () => {
-  return (
-    <div>
-      <h1>My event</h1>
-    </div>
-  );
-};
+import Layout from '../../components/Layout';
 
-export default EventPage;
+export default function EventsPage() {
+  return (
+    <Layout>
+      <h1>My event</h1>
+    </Layout>
+  );
+}
