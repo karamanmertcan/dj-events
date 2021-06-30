@@ -1,4 +1,5 @@
 import Layout from '@/components/Layout';
+import parseCookies from '@/helpers/index';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -8,7 +9,7 @@ import { API_URL } from '@/config/index';
 import Image from 'next/image';
 import styles from '@/styles/Form.module.css';
 
-export default function AddEventPage() {
+export default function AddEventPage({ token }) {
   const router = useRouter();
   const [values, setValues] = useState({
     name: '',
@@ -33,12 +34,16 @@ export default function AddEventPage() {
     const res = await fetch(`${API_URL}/events`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify(values)
     });
 
     if (!res.ok) {
+      if (res.status === 403 || res.status === 401) {
+        toast.error('No token found');
+      }
       toast.error('Something went wrong!!!');
     } else {
       const evt = await res.json();
@@ -133,4 +138,11 @@ export default function AddEventPage() {
       </form>
     </Layout>
   );
+}
+
+export async function getServerSideProps({ req }) {
+  const { token } = parseCookies(req);
+  return {
+    props: { token }
+  };
 }
